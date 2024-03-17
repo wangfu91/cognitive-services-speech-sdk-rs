@@ -10,7 +10,7 @@ pub enum CancellationReason {
 }
 
 impl CancellationReason {
-    pub fn from_u32(code: u32) -> Self {
+    pub fn from_i32(code: i32) -> Self {
         match code {
             1 => CancellationReason::Error,
             2 => CancellationReason::EndOfStream,

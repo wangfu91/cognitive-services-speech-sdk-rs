@@ -15,7 +15,7 @@ pub enum SynthesisVoiceType {
 }
 
 impl SynthesisVoiceType {
-    pub fn from_u32(reason: u32) -> Self {
+    pub fn from_i32(reason: i32) -> Self {
         match reason {
             1 => SynthesisVoiceType::OnlineNeural,
             2 => SynthesisVoiceType::OnlineStandard,

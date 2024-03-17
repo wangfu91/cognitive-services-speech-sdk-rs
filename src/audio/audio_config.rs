@@ -10,7 +10,7 @@ use crate::ffi::{
     audio_config_create_audio_output_from_default_speaker,
     audio_config_create_audio_output_from_stream,
     audio_config_create_audio_output_from_wav_file_name, audio_config_get_property_bag,
-    audio_config_release, SmartHandle, SPXAUDIOCONFIGHANDLE, SPXPROPERTYBAGHANDLE,
+    audio_config_release, SmartHandle, SPXAUDIOCONFIGHANDLE,
 };
 use log::*;
 use std::ffi::CString;
@@ -27,11 +27,11 @@ pub struct AudioConfig {
 impl AudioConfig {
     fn from_handle(handle: SPXAUDIOCONFIGHANDLE) -> Result<AudioConfig> {
         unsafe {
-            let mut prop_bag_handle: SPXPROPERTYBAGHANDLE = MaybeUninit::uninit().assume_init();
-            let ret = audio_config_get_property_bag(handle, &mut prop_bag_handle);
+            let mut prop_bag_handle = MaybeUninit::uninit();
+            let ret = audio_config_get_property_bag(handle, prop_bag_handle.as_mut_ptr());
             convert_err(ret, "AudioConfig::from_handle error")?;
 
-            let property_bag = PropertyCollection::from_handle(prop_bag_handle);
+            let property_bag = PropertyCollection::from_handle(prop_bag_handle.assume_init());
 
             let result = AudioConfig {
                 handle: SmartHandle::create("AudioConfig", handle, audio_config_release),

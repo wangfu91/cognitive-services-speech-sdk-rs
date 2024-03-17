@@ -18,7 +18,7 @@ pub enum StreamStatus {
 }
 
 impl StreamStatus {
-    pub fn from_u32(status: u32) -> Self {
+    pub fn from_i32(status: i32) -> Self {
         match status {
             0 => StreamStatus::StreamStatusUnknown,
             1 => StreamStatus::StreamStatusNoData,

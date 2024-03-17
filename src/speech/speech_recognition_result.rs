@@ -8,7 +8,7 @@ use crate::ffi::{
 use std::ffi::CStr;
 use std::fmt;
 use std::mem::MaybeUninit;
-use std::os::raw::c_uint;
+use std::os::raw::c_int;
 
 /// Represents speech recognition result contained within callback event *SpeechRecognitionEvent*.
 pub struct SpeechRecognitionResult {
@@ -44,7 +44,7 @@ impl SpeechRecognitionResult {
             )?;
             let result_id = CStr::from_ptr(c_buf.as_ptr()).to_str()?.to_owned();
 
-            let mut reason: c_uint = MaybeUninit::uninit().assume_init();
+            let mut reason: c_int = MaybeUninit::uninit().assume_init();
             ret = result_get_reason(handle, &mut reason);
             convert_err(
                 ret,
@@ -88,7 +88,7 @@ impl SpeechRecognitionResult {
                     recognizer_result_handle_release,
                 ),
                 result_id,
-                reason: ResultReason::from_u32(reason),
+                reason: ResultReason::from_i32(reason),
                 text: result_text,
                 duration: (duration).to_string(),
                 offset: (offset).to_string(),

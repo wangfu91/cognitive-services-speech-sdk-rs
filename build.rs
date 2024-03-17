@@ -7,10 +7,10 @@ use std::{
     str,
 };
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "linux")]
 const LINUX_SDK_URL: &str  = "https://github.com/jabber-tools/cognitive-services-speech-sdk-rs-files/blob/main/SpeechSDK/1.22.0/linux/SpeechSDK-Linux-1.22.0.tar.gz?raw=true";
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "linux")]
 fn download_file(url: &str, dst: &str) {
     Command::new("curl")
         .args(&["-SL", url, "-o", dst])
@@ -18,7 +18,52 @@ fn download_file(url: &str, dst: &str) {
         .expect("failed to download Speech SDK!");
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "windows")]
+fn main() {
+    let sdk_path = Path::new("./SpeechSDK/windows");
+
+    #[cfg(target_arch = "x86_64")]
+    let lib_path = sdk_path.join("lib").join("x64");
+
+    let mut inc_arg = String::from("-I");
+    inc_arg.push_str(sdk_path.join("include").join("c_api").to_str().unwrap());
+
+    println!("cargo:rustc-link-search=native={}", lib_path.display());
+    println!("cargo:rustc-link-lib=dylib=Microsoft.CognitiveServices.Speech.core");
+
+    let skip_bindgen = env::var("MS_COG_SVC_SPEECH_SKIP_BINDGEN")
+        .map(|v| v == "1")
+        .unwrap_or(false);
+
+    if skip_bindgen {
+        return;
+    }
+
+    // The bindgen::Builder is the main entry point
+    // to bindgen, and lets you build up options for
+    // the resulting bindings.
+    let bindings_builder = bindgen::Builder::default()
+        // The input header we would like to generate
+        // bindings for.
+        .header("c_api/wrapper.h")
+        // use line below when building from local SpeechSDK folder
+        //.clang_arg("-ISpeechSDK/include/c_api/")
+        // use this line when building from downloaded files in OUT_DIR
+        .clang_arg(inc_arg.as_str());
+
+    // Finish the builder and generate the bindings.
+    let bindings = bindings_builder
+        .generate()
+        // Unwrap the Result and panic on failure.
+        .expect("Unable to generate bindings");
+
+    // Write the bindings to the $OUT_DIR/bindings.rs file.
+    bindings
+        .write_to_file("src/ffi/bindings.rs")
+        .expect("Couldn't write bindings!");
+}
+
+#[cfg(target_os = "linux")]
 fn main() {
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     // copying SpeechSDK from local folder just worked fine but crates.io allows

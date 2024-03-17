@@ -36,7 +36,7 @@ impl SpeechSynthesisWordBoundaryEvent {
             );
             convert_err(ret, "SpeechSynthesisWordBoundaryEvent::from_handle error")?;
 
-            let boundary_type = SpeechSynthesisBoundaryType::from_u32(boundary_type);
+            let boundary_type = SpeechSynthesisBoundaryType::from_i32(boundary_type);
 
             Ok(SpeechSynthesisWordBoundaryEvent {
                 handle: SmartHandle::create(
