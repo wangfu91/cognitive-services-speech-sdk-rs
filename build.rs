@@ -219,7 +219,7 @@ fn main() {
 
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
-    let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(false);
+    let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(true);
     let out_sdk_path = out_path.join("SpeechSDK").join("macOS");
     if !out_sdk_path.exists() {
         renew = true;
