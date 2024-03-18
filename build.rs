@@ -29,9 +29,9 @@ fn main() {
         fs::create_dir_all(&parent_dir).unwrap();
     }
 
-    let out_sdk_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(true);
-    let out_sdk_path = out_sdk_path.join("SpeechSDK").join("windows");
+    let out_sdk_path = out_dir.join("SpeechSDK").join("windows");
     if !out_sdk_path.exists() {
         renew = true;
         fs::create_dir_all(&out_sdk_path).unwrap();
@@ -65,6 +65,34 @@ fn main() {
             }
         }
     }
+
+    /* Well, this won't work, because 'CARGO_TARGET_DIR' env is optional and not always set.
+    let target_dir = env::var("CARGO_TARGET_DIR").unwrap();
+    let runtime = out_sdk_path.join("runtimes");
+    #[cfg(target_arch = "x86")]
+    let deps_path = runtime.join("win-x86").join("native");
+    #[cfg(target_arch = "x86_64")]
+    let deps_path = runtime.join("win-x64").join("native");
+    #[cfg(target_arch = "arm")]
+    let deps_path = runtime.join("win-arm").join("native");
+    #[cfg(target_arch = "aarch64")]
+    let deps_path = runtime.join("win-arm64").join("native");
+
+    // Copy dependency DLLs to the the directory where the executable will be placed.
+    if let Ok(entries) = fs::read_dir(deps_path) {
+        for entry in entries.flatten() {
+            let entry_path = entry.path();
+            // Check if the entry is a DLL file.
+            if let Some(ext) = entry_path.extension() {
+                if ext == "dll" {
+                    // Copy the DLL to the output directory.
+                    let dll_name = entry_path.file_name().unwrap();
+                    fs::copy(&entry.path(), Path::new(&target_dir).join(dll_name)).unwrap();
+                }
+            }
+        }
+    }
+    */
 
     let native = out_sdk_path.join("build").join("native");
 
