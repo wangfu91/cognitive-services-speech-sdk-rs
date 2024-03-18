@@ -7,10 +7,8 @@ use std::{
     str,
 };
 
-#[cfg(target_os = "linux")]
-const LINUX_SDK_URL: &str  = "https://github.com/jabber-tools/cognitive-services-speech-sdk-rs-files/blob/main/SpeechSDK/1.22.0/linux/SpeechSDK-Linux-1.22.0.tar.gz?raw=true";
+const SPEECH_SDK_VERSION: &str = "1.36.0";
 
-#[cfg(target_os = "linux")]
 fn download_file(url: &str, dst: &str) {
     Command::new("curl")
         .args(&["-SL", url, "-o", dst])
@@ -65,50 +63,39 @@ fn main() {
 
 #[cfg(target_os = "linux")]
 fn main() {
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-    // copying SpeechSDK from local folder just worked fine but crates.io allows
-    // only 10 MB to be uploaded per crate. Because of that SpeechSDK shared libraries
-    // were moved to separate repository (https://github.com/jabber-tools/cognitive-services-speech-sdk-rs-files)
-    // and must be downloaded during build from there.
-    /*
-    fs::copy(
-        "./SpeechSDK/lib/x64/libMicrosoft.CognitiveServices.Speech.core.so",
-        Path::new(&out_path).join("libMicrosoft.CognitiveServices.Speech.core.so"),
-    )
-    .unwrap();
-    fs::copy(
-        "./SpeechSDK/lib/x64/libMicrosoft.CognitiveServices.Speech.extension.kws.so",
-        Path::new(&out_path).join("libMicrosoft.CognitiveServices.Speech.extension.kws.so"),
-    )
-    .unwrap();
-    fs::copy(
-        "./SpeechSDK/lib/x64/libMicrosoft.CognitiveServices.Speech.extension.codec.so",
-        Path::new(&out_path).join("libMicrosoft.CognitiveServices.Speech.extension.codec.so"),
-    )
-    .unwrap();
+    let linux_sdk_url = format!(
+        "https://csspeechstorage.blob.core.windows.net/drop/{SPEECH_SDK_VERSION}/SpeechSDK-Linux-{SPEECH_SDK_VERSION}.tar.gz");
 
-    println!("cargo:rustc-link-search=native={}", out_path.display());
-    println!("cargo:rustc-link-lib=dylib=Microsoft.CognitiveServices.Speech.core");
-    */
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
 
     let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(false);
-    let sdk_path = out_path.join("SpeechSDK").join("linux");
-    if !sdk_path.exists() {
+    let out_sdk_path = out_path.join("SpeechSDK").join("linux");
+    if !out_sdk_path.exists() {
         renew = true;
-        fs::create_dir_all(&sdk_path).unwrap();
+        fs::create_dir_all(&out_sdk_path).unwrap();
+    }
+
+    let parent_dir = PathBuf::from("./SpeechSDK").join("linux");
+    if !parent_dir.exists() {
+        fs::create_dir_all(&parent_dir).unwrap();
+    }
+
+    let sdk_tar_file = PathBuf::from("./SpeechSDK")
+        .join("linux")
+        .join(format!("SpeechSDK-Linux-{SPEECH_SDK_VERSION}.tar.gz"));
+
+    if !sdk_tar_file.exists() {
+        download_file(linux_sdk_url.as_str(), sdk_tar_file.to_str().unwrap());
     }
 
     if renew {
-        let dw_file = out_path.join("linux.sdk");
-        let sdk_file = dw_file.to_str().unwrap();
-        download_file(LINUX_SDK_URL, sdk_file);
         let args = [
             "--strip",
             "1",
             "-xzf",
-            sdk_file,
+            sdk_tar_file.to_str().unwrap(),
             "-C",
-            sdk_path.to_str().unwrap(),
+            out_sdk_path.to_str().unwrap(),
         ];
         Command::new("tar").args(&args).status().unwrap();
     }
@@ -116,14 +103,14 @@ fn main() {
     #[cfg(target_arch = "x86")]
     let lib_path = sdk_path.join("lib").join("x86");
     #[cfg(target_arch = "x86_64")]
-    let lib_path = sdk_path.join("lib").join("x64");
+    let lib_path = out_sdk_path.join("lib").join("x64");
     #[cfg(target_arch = "arm")]
     let lib_path = sdk_path.join("lib").join("arm32");
     #[cfg(target_arch = "aarch64")]
     let lib_path = sdk_path.join("lib").join("arm64");
 
     let mut inc_arg = String::from("-I");
-    inc_arg.push_str(sdk_path.join("include").join("c_api").to_str().unwrap());
+    inc_arg.push_str(out_sdk_path.join("include").join("c_api").to_str().unwrap());
 
     println!("cargo:rustc-link-search=native={}", lib_path.display());
     println!("cargo:rustc-link-lib=dylib=Microsoft.CognitiveServices.Speech.core");
