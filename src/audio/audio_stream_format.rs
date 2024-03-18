@@ -72,9 +72,14 @@ impl AudioStreamFormat {
     ) -> Result<AudioStreamFormat> {
         unsafe {
             let mut handle = MaybeUninit::uninit();
+            #[cfg(not(target_os = "windows"))]
+            let compressed_format = compressed_format.to_u32();
+            #[cfg(target_os = "windows")]
+            let compressed_format = compressed_format.to_i32();
+
             let ret = audio_stream_format_create_from_compressed_format(
                 handle.as_mut_ptr(),
-                compressed_format.to_u32() as i32,
+                compressed_format,
             );
             convert_err(ret, "AudioStreamFormat::get_compressed_format error")?;
             AudioStreamFormat::from_handle(handle.assume_init())

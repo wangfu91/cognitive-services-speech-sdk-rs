@@ -10,11 +10,17 @@ pub enum CancellationReason {
 }
 
 impl CancellationReason {
+    #[cfg(not(target_os = "windows"))]
     pub fn from_u32(code: u32) -> Self {
         match code {
             1 => CancellationReason::Error,
             2 => CancellationReason::EndOfStream,
             _ => CancellationReason::CancelledByUser,
         }
+    }
+
+    #[cfg(target_os = "windows")]
+    pub fn from_i32(code: i32) -> Self {
+        CancellationReason::from_u32(code as u32)
     }
 }

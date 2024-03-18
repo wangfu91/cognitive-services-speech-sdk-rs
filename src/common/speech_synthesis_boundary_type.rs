@@ -12,11 +12,17 @@ pub enum SpeechSynthesisBoundaryType {
 }
 
 impl SpeechSynthesisBoundaryType {
+    #[cfg(not(target_os = "windows"))]
     pub fn from_u32(value: u32) -> Self {
         match value {
             0 => SpeechSynthesisBoundaryType::WordBoundary,
             1 => SpeechSynthesisBoundaryType::PunctuationBoundary,
             _ => SpeechSynthesisBoundaryType::SentenceBoundary,
         }
+    }
+
+    #[cfg(target_os = "windows")]
+    pub fn from_i32(value: i32) -> Self {
+        SpeechSynthesisBoundaryType::from_u32(value as u32)
     }
 }

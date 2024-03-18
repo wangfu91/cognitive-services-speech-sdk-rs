@@ -15,6 +15,7 @@ pub enum SynthesisVoiceType {
 }
 
 impl SynthesisVoiceType {
+    #[cfg(not(target_os = "windows"))]
     pub fn from_u32(reason: u32) -> Self {
         match reason {
             1 => SynthesisVoiceType::OnlineNeural,
@@ -22,5 +23,10 @@ impl SynthesisVoiceType {
             3 => SynthesisVoiceType::OfflineNeural,
             _ => SynthesisVoiceType::OfflineStandard,
         }
+    }
+
+    #[cfg(target_os = "windows")]
+    pub fn from_i32(reason: i32) -> Self {
+        SynthesisVoiceType::from_u32(reason as u32)
     }
 }

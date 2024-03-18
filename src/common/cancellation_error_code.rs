@@ -28,6 +28,7 @@ pub enum CancellationErrorCode {
 }
 
 impl CancellationErrorCode {
+    #[cfg(not(target_os = "windows"))]
     pub fn from_u32(code: u32) -> Self {
         match code {
             0 => CancellationErrorCode::NoError,
@@ -41,5 +42,10 @@ impl CancellationErrorCode {
             8 => CancellationErrorCode::ServiceUnavailable,
             _ => CancellationErrorCode::RuntimeError,
         }
+    }
+
+    #[cfg(target_os = "windows")]
+    pub fn from_i32(code: i32) -> Self {
+        CancellationErrorCode::from_u32(code as u32)
     }
 }

@@ -35,7 +35,11 @@ impl SpeechSynthesisWordBoundaryEvent {
             );
             convert_err(ret, "SpeechSynthesisWordBoundaryEvent::from_handle error")?;
 
-            let boundary_type = SpeechSynthesisBoundaryType::from_u32(boundary_type.assume_init() as u32);
+            #[cfg(target_os = "windows")]
+            let boundary_type = SpeechSynthesisBoundaryType::from_i32(boundary_type.assume_init());
+            #[cfg(not(target_os = "windows"))]
+            let boundary_type = SpeechSynthesisBoundaryType::from_u32(boundary_type.assume_init());
+
             let audio_offset = audio_offset.assume_init();
             let duration_ms = duration_ms.assume_init();
             let text_offset = text_offset.assume_init();

@@ -60,13 +60,18 @@ impl VoiceInfo {
                 "VoiceInfo::from_handle(voice_info_get_property_bag) error",
             )?;
 
+            #[cfg(target_os = "windows")]
+            let voice_type = SynthesisVoiceType::from_i32(voice_type.assume_init());
+            #[cfg(not(target_os = "windows"))]
+            let voice_type = SynthesisVoiceType::from_u32(voice_type.assume_init());
+
             Ok(VoiceInfo {
                 handle: SmartHandle::create("VoiceInfo", handle, voice_info_handle_release),
                 name: voice_name,
                 locale,
                 short_name,
                 local_name,
-                voice_type: SynthesisVoiceType::from_u32(voice_type.assume_init() as u32),
+                voice_type,
                 style_list,
                 voice_path,
                 properties: PropertyCollection::from_handle(prop_bag_handle.assume_init()),
