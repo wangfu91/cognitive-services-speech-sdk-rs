@@ -248,7 +248,7 @@ fn main() {
         Command::new("unzip").args(args).status().unwrap();
     }
 
-    println!("cargo:rustc-link-search=framework={}/MicrosoftCognitiveServicesSpeech.xcframework/macos-arm64_x86_64/MicrosoftCognitiveServicesSpeech.framework", out_sdk_path.display());
+    println!("cargo:rustc-link-search=framework={}/MicrosoftCognitiveServicesSpeech.xcframework/macos-arm64_x86_64", out_sdk_path.display());
     println!("cargo:rustc-link-lib=framework=MicrosoftCognitiveServicesSpeech");
 
     let inc_arg = format!("-I{}/MicrosoftCognitiveServicesSpeech.xcframework/macos-arm64_x86_64/MicrosoftCognitiveServicesSpeech.framework/Headers", out_sdk_path.display());
