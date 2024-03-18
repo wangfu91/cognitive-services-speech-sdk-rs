@@ -107,7 +107,7 @@ impl SpeechSynthesisResult {
                     synthesizer_result_handle_release,
                 ),
                 result_id,
-                reason: ResultReason::from_u32(reason.assume_init()),
+                reason: ResultReason::from_u32(reason.assume_init() as u32),
                 audio_data: slice_buffer.to_vec(),
                 audio_duration_ms: audio_duration,
                 properties,

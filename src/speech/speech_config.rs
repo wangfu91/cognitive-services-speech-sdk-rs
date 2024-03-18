@@ -232,12 +232,21 @@ impl SpeechConfig {
         unsafe {
             let c_name = CString::new(name)?;
             let c_value = CString::new(value)?;
+            #[cfg(target_os = "windows")]
+            let ret = speech_config_set_service_property(
+                self.handle.inner(),
+                c_name.as_ptr(),
+                c_value.as_ptr(),
+                channel as i32,
+            );
+            #[cfg(not(target_os = "windows"))]
             let ret = speech_config_set_service_property(
                 self.handle.inner(),
                 c_name.as_ptr(),
                 c_value.as_ptr(),
                 channel as u32,
             );
+
             convert_err(ret, "SpeechConfig.set_service_property error")?;
             Ok(())
         }
@@ -245,7 +254,11 @@ impl SpeechConfig {
 
     pub fn set_profanity_option(&mut self, profanity_option: ProfanityOption) -> Result<()> {
         unsafe {
+            #[cfg(target_os = "windows")]
+            let ret = speech_config_set_profanity(self.handle.inner(), profanity_option as i32);
+            #[cfg(not(target_os = "windows"))]
             let ret = speech_config_set_profanity(self.handle.inner(), profanity_option as u32);
+
             convert_err(ret, "SpeechConfig.set_profanity_option error")?;
             Ok(())
         }

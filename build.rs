@@ -18,13 +18,67 @@ fn download_file(url: &str, dst: &str) {
 
 #[cfg(target_os = "windows")]
 fn main() {
-    let sdk_path = Path::new("./SpeechSDK/windows");
+    use std::{fs::File, io::BufReader};
 
+    use zip::ZipArchive;
+
+    let nuget_package_url = format!("https://www.nuget.org/api/v2/package/Microsoft.CognitiveServices.Speech/{SPEECH_SDK_VERSION}");
+
+    let parent_dir = PathBuf::from("./SpeechSDK").join("windows");
+    if !parent_dir.exists() {
+        fs::create_dir_all(&parent_dir).unwrap();
+    }
+
+    let out_sdk_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(true);
+    let out_sdk_path = out_sdk_path.join("SpeechSDK").join("windows");
+    if !out_sdk_path.exists() {
+        renew = true;
+        fs::create_dir_all(&out_sdk_path).unwrap();
+    }
+
+    let sdk_tar_file = parent_dir.join(format!(
+        "microsoft.cognitiveservices.speech.{SPEECH_SDK_VERSION}.nupkg"
+    ));
+    if !sdk_tar_file.exists() {
+        download_file(nuget_package_url.as_str(), sdk_tar_file.to_str().unwrap());
+    }
+
+    if renew {
+        let reader = File::open(sdk_tar_file).unwrap();
+        let mut archive = ZipArchive::new(BufReader::new(reader)).unwrap();
+
+        for i in 0..archive.len() {
+            let mut file = archive.by_index(i).unwrap();
+            let outpath = out_sdk_path.join(file.mangled_name());
+
+            if file.name().ends_with('/') {
+                std::fs::create_dir_all(&outpath).unwrap();
+            } else {
+                if let Some(p) = outpath.parent() {
+                    if !p.exists() {
+                        std::fs::create_dir_all(p).unwrap();
+                    }
+                }
+                let mut outfile = std::fs::File::create(&outpath).unwrap();
+                std::io::copy(&mut file, &mut outfile).unwrap();
+            }
+        }
+    }
+
+    let native = out_sdk_path.join("build").join("native");
+
+    #[cfg(target_arch = "x86")]
+    let lib_path = native.join("Win32").join("Release");
     #[cfg(target_arch = "x86_64")]
-    let lib_path = sdk_path.join("lib").join("x64").join("Release");
+    let lib_path = native.join("x64").join("Release");
+    #[cfg(target_arch = "arm")]
+    let lib_path = native.join("ARM").join("Release");
+    #[cfg(target_arch = "aarch64")]
+    let lib_path = native.join("ARM64").join("Release");
 
     let mut inc_arg = String::from("-I");
-    inc_arg.push_str(sdk_path.join("include").join("c_api").to_str().unwrap());
+    inc_arg.push_str(native.join("include").join("c_api").to_str().unwrap());
 
     println!("cargo:rustc-link-search=native={}", lib_path.display());
     println!("cargo:rustc-link-lib=dylib=Microsoft.CognitiveServices.Speech.core");
@@ -98,13 +152,13 @@ fn main() {
     }
 
     #[cfg(target_arch = "x86")]
-    let lib_path = sdk_path.join("lib").join("x86");
+    let lib_path = out_sdk_path.join("lib").join("x86");
     #[cfg(target_arch = "x86_64")]
     let lib_path = out_sdk_path.join("lib").join("x64");
     #[cfg(target_arch = "arm")]
-    let lib_path = sdk_path.join("lib").join("arm32");
+    let lib_path = out_sdk_path.join("lib").join("arm32");
     #[cfg(target_arch = "aarch64")]
-    let lib_path = sdk_path.join("lib").join("arm64");
+    let lib_path = out_sdk_path.join("lib").join("arm64");
 
     let mut inc_arg = String::from("-I");
     inc_arg.push_str(out_sdk_path.join("include").join("c_api").to_str().unwrap());
