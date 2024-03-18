@@ -10,7 +10,6 @@ pub enum CancellationReason {
 }
 
 impl CancellationReason {
-    #[cfg(not(target_os = "windows"))]
     pub fn from_u32(code: u32) -> Self {
         match code {
             1 => CancellationReason::Error,
@@ -19,7 +18,6 @@ impl CancellationReason {
         }
     }
 
-    #[cfg(target_os = "windows")]
     pub fn from_i32(code: i32) -> Self {
         CancellationReason::from_u32(code as u32)
     }

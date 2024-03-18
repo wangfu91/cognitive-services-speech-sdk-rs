@@ -16,7 +16,6 @@ pub enum AudioStreamContainerFormat {
 }
 
 impl AudioStreamContainerFormat {
-    #[cfg(not(target_os = "windows"))]
     /// Converts enum instance to respective u32 value.
     pub fn to_u32(&self) -> u32 {
         match self {
@@ -32,7 +31,6 @@ impl AudioStreamContainerFormat {
         }
     }
 
-    #[cfg(target_os = "windows")]
     pub fn to_i32(&self) -> i32 {
         self.to_u32() as i32
     }

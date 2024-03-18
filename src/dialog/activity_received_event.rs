@@ -5,8 +5,7 @@ use crate::ffi::{
     dialog_service_connector_activity_received_event_get_activity_size,
     dialog_service_connector_activity_received_event_get_audio,
     dialog_service_connector_activity_received_event_has_audio,
-    dialog_service_connector_activity_received_event_release, SmartHandle,
-    SPXEVENTHANDLE,
+    dialog_service_connector_activity_received_event_release, SmartHandle, SPXEVENTHANDLE,
 };
 use std::ffi::CStr;
 use std::mem::MaybeUninit;
