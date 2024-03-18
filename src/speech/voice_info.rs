@@ -66,7 +66,7 @@ impl VoiceInfo {
                 locale,
                 short_name,
                 local_name,
-                voice_type: SynthesisVoiceType::from_i32(voice_type.assume_init()),
+                voice_type: SynthesisVoiceType::from_u32(voice_type.assume_init()),
                 style_list,
                 voice_path,
                 properties: PropertyCollection::from_handle(prop_bag_handle.assume_init()),

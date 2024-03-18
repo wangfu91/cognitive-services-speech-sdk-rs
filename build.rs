@@ -11,7 +11,7 @@ const SPEECH_SDK_VERSION: &str = "1.36.0";
 
 fn download_file(url: &str, dst: &str) {
     Command::new("curl")
-        .args(&["-SL", url, "-o", dst])
+        .args(["-SL", url, "-o", dst])
         .status()
         .expect("failed to download Speech SDK!");
 }
@@ -80,10 +80,7 @@ fn main() {
         fs::create_dir_all(&parent_dir).unwrap();
     }
 
-    let sdk_tar_file = PathBuf::from("./SpeechSDK")
-        .join("linux")
-        .join(format!("SpeechSDK-Linux-{SPEECH_SDK_VERSION}.tar.gz"));
-
+    let sdk_tar_file = parent_dir.join(format!("SpeechSDK-Linux-{SPEECH_SDK_VERSION}.tar.gz"));
     if !sdk_tar_file.exists() {
         download_file(linux_sdk_url.as_str(), sdk_tar_file.to_str().unwrap());
     }
@@ -97,7 +94,7 @@ fn main() {
             "-C",
             out_sdk_path.to_str().unwrap(),
         ];
-        Command::new("tar").args(&args).status().unwrap();
+        Command::new("tar").args(args).status().unwrap();
     }
 
     #[cfg(target_arch = "x86")]

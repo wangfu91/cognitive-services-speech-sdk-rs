@@ -48,7 +48,7 @@ pub enum ResultReason {
 }
 
 impl ResultReason {
-    pub fn from_i32(reason: i32) -> Self {
+    pub fn from_u32(reason: u32) -> Self {
         match reason {
             0 => ResultReason::NoMatch,
             1 => ResultReason::Canceled,

@@ -87,7 +87,7 @@ impl SpeechRecognitionResult {
                     recognizer_result_handle_release,
                 ),
                 result_id,
-                reason: ResultReason::from_i32(reason.assume_init()),
+                reason: ResultReason::from_u32(reason.assume_init()),
                 text: result_text,
                 duration: (duration.assume_init()).to_string(),
                 offset: (offset.assume_init()).to_string(),

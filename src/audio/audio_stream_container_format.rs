@@ -16,8 +16,8 @@ pub enum AudioStreamContainerFormat {
 }
 
 impl AudioStreamContainerFormat {
-    /// Converts enum instance to respective i32 value.
-    pub fn to_i32(&self) -> i32 {
+    /// Converts enum instance to respective u32 value.
+    pub fn to_u32(&self) -> u32 {
         match self {
             AudioStreamContainerFormat::OggOpus => 257,
             AudioStreamContainerFormat::Mp3 => 258,

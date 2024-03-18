@@ -74,7 +74,7 @@ impl AudioStreamFormat {
             let mut handle = MaybeUninit::uninit();
             let ret = audio_stream_format_create_from_compressed_format(
                 handle.as_mut_ptr(),
-                compressed_format.to_i32(),
+                compressed_format.to_u32(),
             );
             convert_err(ret, "AudioStreamFormat::get_compressed_format error")?;
             AudioStreamFormat::from_handle(handle.assume_init())

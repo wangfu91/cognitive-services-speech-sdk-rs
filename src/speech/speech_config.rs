@@ -236,7 +236,7 @@ impl SpeechConfig {
                 self.handle.inner(),
                 c_name.as_ptr(),
                 c_value.as_ptr(),
-                channel as i32,
+                channel as u32,
             );
             convert_err(ret, "SpeechConfig.set_service_property error")?;
             Ok(())
@@ -245,7 +245,7 @@ impl SpeechConfig {
 
     pub fn set_profanity_option(&mut self, profanity_option: ProfanityOption) -> Result<()> {
         unsafe {
-            let ret = speech_config_set_profanity(self.handle.inner(), profanity_option as i32);
+            let ret = speech_config_set_profanity(self.handle.inner(), profanity_option as u32);
             convert_err(ret, "SpeechConfig.set_profanity_option error")?;
             Ok(())
         }

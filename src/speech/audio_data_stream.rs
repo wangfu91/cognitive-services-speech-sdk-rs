@@ -67,7 +67,7 @@ impl AudioDataStream {
             let mut status = MaybeUninit::uninit();
             let ret = audio_data_stream_get_status(self.handle.inner(), status.as_mut_ptr());
             convert_err(ret, "AudioDataStream.get_status error")?;
-            Ok(StreamStatus::from_i32(status.assume_init()))
+            Ok(StreamStatus::from_u32(status.assume_init()))
         }
     }
 

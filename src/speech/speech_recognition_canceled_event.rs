@@ -50,8 +50,8 @@ impl SpeechRecognitionCanceledEvent {
 
             Ok(SpeechRecognitionCanceledEvent {
                 base,
-                reason: CancellationReason::from_i32(reason.assume_init()),
-                error_code: CancellationErrorCode::from_i32(error_code.assume_init()),
+                reason: CancellationReason::from_u32(reason.assume_init()),
+                error_code: CancellationErrorCode::from_u32(error_code.assume_init()),
                 error_details,
             })
         }

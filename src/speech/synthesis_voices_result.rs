@@ -83,7 +83,7 @@ impl SynthesisVoicesResult {
                 ),
                 voices,
                 result_id,
-                reason: ResultReason::from_i32(reason.assume_init()),
+                reason: ResultReason::from_u32(reason.assume_init()),
                 error_details,
                 properties,
             })
