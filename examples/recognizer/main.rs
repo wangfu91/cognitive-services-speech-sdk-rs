@@ -14,7 +14,7 @@ async fn main() {
     helpers::set_env_vars(r"D:\tmp\keys\az-speech-services.txt");
     env_logger::init();
 
-    // recognize_once_async_from_file::run_example().await;
+    recognize_once_async_from_file::run_example().await;
 
     // continuous_recognition_from_file::run_example().await;
 
@@ -24,7 +24,7 @@ async fn main() {
     // continuous_recognition_pull_stream::run_example().await;
 
     // works only on system with properly configured microphone
-    from_microphone::run_example().await;
+    // from_microphone::run_example().await;
 
     // not available in public release yet
     //embedded_recognize_once_async_from_file::run_example().await;

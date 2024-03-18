@@ -23,7 +23,7 @@ fn main() {
     let sdk_path = Path::new("./SpeechSDK/windows");
 
     #[cfg(target_arch = "x86_64")]
-    let lib_path = sdk_path.join("lib").join("x64");
+    let lib_path = sdk_path.join("lib").join("x64").join("Release");
 
     let mut inc_arg = String::from("-I");
     inc_arg.push_str(sdk_path.join("include").join("c_api").to_str().unwrap());

@@ -110,7 +110,7 @@ impl PullAudioInputStream {
                 "PullAudioInputStream.set_callbacks (pull_audio_input_stream_set_callbacks) error",
             )?;
 
-            if register_get_prop_cb == true {
+            if register_get_prop_cb {
                 ret = pull_audio_input_stream_set_getproperty_callback(
                     self.handle.inner(),
                     self as *const _ as *mut c_void,
