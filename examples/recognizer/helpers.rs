@@ -15,7 +15,7 @@ pub fn set_env_vars(ms_key_file_path: &str) {
         .to_owned();
 
     env::set_var("MSSubscriptionKey", msskey);
-    env::set_var("MSServiceRegion", "eastasia");
+    env::set_var("MSServiceRegion", "westeurope");
     env::set_var("RUST_LOG", "debug");
     env::set_var("RUST_BACKTRACE", "1");
 }

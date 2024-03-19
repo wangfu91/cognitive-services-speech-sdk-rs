@@ -69,11 +69,9 @@ impl AudioDataStream {
             convert_err(ret, "AudioDataStream.get_status error")?;
 
             #[cfg(target_os = "windows")]
-            let status = status.assume_init() as u32;
+            return Ok(StreamStatus::from_i32(status.assume_init()));
             #[cfg(not(target_os = "windows"))]
-            let status = status.assume_init();
-
-            Ok(StreamStatus::from_u32(status))
+            return Ok(StreamStatus::from_u32(status.assume_init()));
         }
     }
 
