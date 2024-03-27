@@ -119,18 +119,16 @@ fn main() {
     let linux_sdk_url = format!(
         "https://csspeechstorage.blob.core.windows.net/drop/{SPEECH_SDK_VERSION}/SpeechSDK-Linux-{SPEECH_SDK_VERSION}.tar.gz");
 
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-
-    let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(false);
-    let out_sdk_path = out_path.join("SpeechSDK").join("linux");
-    if !out_sdk_path.exists() {
-        renew = true;
-        fs::create_dir_all(&out_sdk_path).unwrap();
-    }
-
     let parent_dir = PathBuf::from("./SpeechSDK").join("linux");
     if !parent_dir.exists() {
         fs::create_dir_all(&parent_dir).unwrap();
+    }
+
+    let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(false);
+    let out_sdk_path = parent_dir.join("speech");
+    if !out_sdk_path.exists() {
+        renew = true;
+        fs::create_dir_all(&out_sdk_path).unwrap();
     }
 
     let sdk_tar_file = parent_dir.join(format!("SpeechSDK-Linux-{SPEECH_SDK_VERSION}.tar.gz"));
