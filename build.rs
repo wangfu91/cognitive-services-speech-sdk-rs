@@ -214,18 +214,16 @@ fn main() {
 fn main() {
     let mac_sdk_url = format!("https://csspeechstorage.blob.core.windows.net/drop/1.36.0/MicrosoftCognitiveServicesSpeech-MacOSXCFramework-{SPEECH_SDK_VERSION}.zip");
 
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-
-    let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(true);
-    let out_sdk_path = out_path.join("SpeechSDK").join("macOS");
-    if !out_sdk_path.exists() {
-        renew = true;
-        fs::create_dir_all(&out_sdk_path).unwrap();
-    }
-
     let parent_dir = PathBuf::from("./SpeechSDK").join("macOS");
     if !parent_dir.exists() {
         fs::create_dir_all(&parent_dir).unwrap();
+    }
+
+    let mut renew = env::var("RENEW_SDK").map(|v| v == "1").unwrap_or(false);
+    let out_sdk_path = parent_dir.join("speech");
+    if !out_sdk_path.exists() {
+        renew = true;
+        fs::create_dir_all(&out_sdk_path).unwrap();
     }
 
     let sdk_zip_file = parent_dir.join(format!(
