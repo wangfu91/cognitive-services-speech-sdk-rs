@@ -9,14 +9,16 @@ use std::io::Read;
 /// convenience function to setup environment variables
 /// subscription key is taken from external file
 pub fn set_env_vars(ms_key_file_path: &str) {
+    /*
     let msskey: String = std::fs::read_to_string(ms_key_file_path)
         .unwrap()
         .trim()
         .to_owned();
 
     env::set_var("MSSubscriptionKey", msskey);
+     */
     env::set_var("MSServiceRegion", "westeurope");
-    env::set_var("RUST_LOG", "debug");
+    env::set_var("RUST_LOG", "info");
     env::set_var("RUST_BACKTRACE", "1");
 }
 
