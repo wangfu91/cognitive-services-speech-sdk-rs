@@ -4,6 +4,7 @@ mod continuous_recognition_push_stream;
 mod embedded_continuous_recognition_pull_stream;
 mod embedded_recognize_once_async_from_file;
 mod from_microphone;
+mod from_speaker;
 mod helpers;
 mod recognize_once_async_from_file;
 mod recognize_once_async_from_push_stream;
@@ -26,5 +27,6 @@ async fn main() {
      */
 
     //embedded_recognize_once_async_from_file::run_example().await;
-    embedded_continuous_recognition_pull_stream::run_example().await;
+    //embedded_continuous_recognition_pull_stream::run_example().await;
+    from_speaker::run_example().await;
 }
