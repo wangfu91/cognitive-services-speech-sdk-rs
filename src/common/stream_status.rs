@@ -1,30 +1,31 @@
-/// StreamStatus defines the possible status of audio data stream.
+/// Defines the possible status of audio data stream.
+/// Added in version 1.4.0
 #[derive(Debug)]
 pub enum StreamStatus {
-    /// StreamStatusUnknown indicates the audio data stream status is unknown.
-    StreamStatusUnknown = 0,
+    /// The audio data stream status is unknown
+    Unknown = 0,
 
-    /// StreamStatusNoData indicates that the audio data stream contains no data.
-    StreamStatusNoData = 1,
+    //// The audio data stream contains no data
+    NoData = 1,
 
-    /// StreamStatusNoData indicates that the audio data stream contains no data.
-    StreamStatusPartialData = 2,
+    /// The audio data stream contains partial data of a speak request
+    PartialData = 2,
 
-    /// StreamStatusAllData indicates the audio data stream contains all data of a speak request.
-    StreamStatusAllData = 3,
+    /// The audio data stream contains all data of a speak request
+    AllData = 3,
 
-    /// StreamStatusCanceled indicates the audio data stream was canceled.
-    StreamStatusCanceled = 4,
+    /// The audio data stream was canceled
+    Canceled = 4,
 }
 
 impl StreamStatus {
     pub fn from_u32(status: u32) -> Self {
         match status {
-            0 => StreamStatus::StreamStatusUnknown,
-            1 => StreamStatus::StreamStatusNoData,
-            2 => StreamStatus::StreamStatusPartialData,
-            3 => StreamStatus::StreamStatusAllData,
-            _ => StreamStatus::StreamStatusCanceled,
+            0 => StreamStatus::Unknown,
+            1 => StreamStatus::NoData,
+            2 => StreamStatus::PartialData,
+            3 => StreamStatus::AllData,
+            _ => StreamStatus::Canceled,
         }
     }
 

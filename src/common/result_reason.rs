@@ -43,6 +43,51 @@ pub enum ResultReason {
     /// SynthesizingAudioStarted indicates the speech synthesis is now started
     SynthesizingAudioStarted = 12,
 
+    /// Indicates the transcription result contains hypothesis text and its translation(s) for
+    /// other participants in the conversation.
+    /// Added in version 1.8.0
+    TranslatingParticipantSpeech = 13,
+
+    /// Indicates the transcription result contains final text and corresponding translation(s)
+    /// for other participants in the conversation. Speech Recognition and Translation are now
+    /// complete for this phrase.
+    /// Added in version 1.8.0
+    TranslatedParticipantSpeech = 14,
+
+    /// Indicates the transcription result contains the instant message and corresponding
+    /// translation(s).
+    /// Added in version 1.8.0
+    TranslatedInstantMessage = 15,
+
+    /// Indicates the transcription result contains the instant message for other participants
+    /// in the conversation and corresponding translation(s).
+    /// Added in version 1.8.0
+    TranslatedParticipantInstantMessage = 16,
+
+    /// Indicates the voice profile is being enrolling and customers need to send more audio to create a voice profile.
+    /// Added in version 1.12.0
+    EnrollingVoiceProfile = 17,
+
+    /// The voice profile has been enrolled.
+    /// Added in version 1.12.0
+    EnrolledVoiceProfile = 18,
+
+    /// Indicates successful identification of some speakers.
+    /// Added in version 1.12.0
+    RecognizedSpeakers = 19,
+
+    /// Indicates successfully verified one speaker.
+    /// Added in version 1.12.0
+    RecognizedSpeaker = 20,
+
+    /// Indicates a voice profile has been reset successfully.
+    /// Added in version 1.12.0
+    ResetVoiceProfile = 21,
+
+    /// Indicates a voice profile has been deleted successfully.
+    /// Added in version 1.12.0
+    DeletedVoiceProfile = 22,
+
     /// VoicesListRetrieved indicates the voices list has been retrieved successfully.
     VoicesListRetrieved = 23,
 }
@@ -63,6 +108,16 @@ impl ResultReason {
             10 => ResultReason::RecognizingKeyword,
             11 => ResultReason::RecognizedKeyword,
             12 => ResultReason::SynthesizingAudioStarted,
+            13 => ResultReason::TranslatingParticipantSpeech,
+            14 => ResultReason::TranslatedParticipantSpeech,
+            15 => ResultReason::TranslatedInstantMessage,
+            16 => ResultReason::TranslatedParticipantInstantMessage,
+            17 => ResultReason::EnrollingVoiceProfile,
+            18 => ResultReason::EnrolledVoiceProfile,
+            19 => ResultReason::RecognizedSpeakers,
+            20 => ResultReason::RecognizedSpeaker,
+            21 => ResultReason::ResetVoiceProfile,
+            22 => ResultReason::DeletedVoiceProfile,
             _ => ResultReason::VoicesListRetrieved,
         }
     }

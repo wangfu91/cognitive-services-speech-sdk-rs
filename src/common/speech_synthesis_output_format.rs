@@ -127,4 +127,9 @@ pub enum SpeechSynthesisOutputFormat {
     /// PCM audio at 44100Hz sampling rate and 16-bit depth, with RIFF header.
     /// (Added in 1.22.0)
     Riff44100Hz16BitMonoPcm = 37,
+
+    /// amr-wb-16000hz
+    /// AMR-WB audio at 16kHz sampling rate.
+    /// (Added in 1.24.0)
+    AmrWb16000Hz = 38,
 }

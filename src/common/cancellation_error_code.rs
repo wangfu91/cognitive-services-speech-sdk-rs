@@ -25,6 +25,14 @@ pub enum CancellationErrorCode {
     ServiceUnavailable = 8,
     /// Indicates an unexpected runtime error.
     RuntimeError = 9,
+    /// Indicates the Speech Service is temporarily requesting a reconnect to a different endpoint.
+    /// Note: Used internally
+    ServiceRedirectTemporary = 10,
+    /// Indicates the Speech Service is permanently requesting a reconnect to a different endpoint.
+    /// Note: Used internally
+    ServiceRedirectPermanent = 11,
+    /// Indicates the embedded speech (SR or TTS) model is not available or corrupted.
+    EmbeddedModelError = 12,
 }
 
 impl CancellationErrorCode {
@@ -39,7 +47,10 @@ impl CancellationErrorCode {
             6 => CancellationErrorCode::ServiceTimeout,
             7 => CancellationErrorCode::ServiceError,
             8 => CancellationErrorCode::ServiceUnavailable,
-            _ => CancellationErrorCode::RuntimeError,
+            9 => CancellationErrorCode::RuntimeError,
+            10 => CancellationErrorCode::ServiceRedirectTemporary,
+            11 => CancellationErrorCode::ServiceRedirectPermanent,
+            _ => CancellationErrorCode::EmbeddedModelError,
         }
     }
 
