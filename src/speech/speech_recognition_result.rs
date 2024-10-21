@@ -15,8 +15,8 @@ pub struct SpeechRecognitionResult {
     pub result_id: String,
     pub reason: ResultReason,
     pub text: String,
-    pub duration: String, //TBD: change to duration
-    pub offset: String,   // TBD: change to duration
+    pub duration: u64,
+    pub offset: u64,
     pub properties: PropertyCollection,
 }
 
@@ -96,8 +96,8 @@ impl SpeechRecognitionResult {
                 result_id,
                 reason,
                 text: result_text,
-                duration: (duration).to_string(),
-                offset: (offset).to_string(),
+                duration,
+                offset,
                 properties,
             })
         }
