@@ -6,8 +6,9 @@ use crate::ffi::{
     synthesizer_completed_set_callback,
     synthesizer_create_speech_synthesizer_from_auto_detect_source_lang_config,
     synthesizer_create_speech_synthesizer_from_config, synthesizer_get_property_bag,
-    synthesizer_get_voices_list, synthesizer_handle_release, synthesizer_speak_ssml,
-    synthesizer_speak_text, synthesizer_start_speaking_ssml, synthesizer_start_speaking_text,
+    synthesizer_get_voices_list, synthesizer_handle_release, synthesizer_speak_request,
+    synthesizer_speak_ssml, synthesizer_speak_text, synthesizer_start_speaking_request,
+    synthesizer_start_speaking_ssml, synthesizer_start_speaking_text,
     synthesizer_started_set_callback, synthesizer_stop_speaking,
     synthesizer_synthesizing_set_callback, synthesizer_viseme_received_set_callback,
     synthesizer_word_boundary_set_callback, SmartHandle, SPXEVENTHANDLE, SPXPROPERTYBAGHANDLE,
@@ -24,6 +25,8 @@ use std::ffi::CString;
 use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::c_void;
+
+use super::SpeechSynthesisRequest;
 
 /// SpeechSynthesizer struct holds functionality for text-to-speech synthesis.
 pub struct SpeechSynthesizer {
@@ -151,6 +154,26 @@ impl SpeechSynthesizer {
         }
     }
 
+    /// Execute the speech synthesis on request, asynchronously. This API could be used
+    /// to synthesize speech from an input text stream, to reduce latency for text generation
+    /// scenarios. Note: the feature is in preview and is subject to change. Added in
+    /// version 1.37.0
+    pub async fn speak_async(
+        &self,
+        request: SpeechSynthesisRequest,
+    ) -> Result<SpeechSynthesisResult> {
+        unsafe {
+            let mut result_handle: MaybeUninit<SPXRESULTHANDLE> = MaybeUninit::uninit();
+            let ret = synthesizer_speak_request(
+                self.handle.inner(),
+                request.handle.inner(),
+                result_handle.as_mut_ptr(),
+            );
+            convert_err(ret, "SpeechSynthesizer.speak_async error")?;
+            SpeechSynthesisResult::from_handle(result_handle.assume_init())
+        }
+    }
+
     /// Starts the speech synthesis on plain text, asynchronously.
     /// It returns when the synthesis request is started to process
     /// (the result reason is SynthesizingAudioStarted).
@@ -185,6 +208,26 @@ impl SpeechSynthesizer {
                 result_handle.as_mut_ptr(),
             );
             convert_err(ret, "SpeechSynthesizer.start_speaking_ssml_async error")?;
+            SpeechSynthesisResult::from_handle(result_handle.assume_init())
+        }
+    }
+
+    /// Queue the speech synthesis on request, as an asynchronous operation. This API
+    /// could be used to synthesize speech from an input text stream, to reduce latency
+    /// for text generation scenarios. Note: the feature is in preview and is subject
+    /// to change. Added in version 1.37.0
+    pub async fn start_speaking_async(
+        &self,
+        request: SpeechSynthesisRequest,
+    ) -> Result<SpeechSynthesisResult> {
+        unsafe {
+            let mut result_handle: MaybeUninit<SPXRESULTHANDLE> = MaybeUninit::uninit();
+            let ret = synthesizer_start_speaking_request(
+                self.handle.inner(),
+                request.handle.inner(),
+                result_handle.as_mut_ptr(),
+            );
+            convert_err(ret, "SpeechSynthesizer.start_speaking_async error")?;
             SpeechSynthesisResult::from_handle(result_handle.assume_init())
         }
     }

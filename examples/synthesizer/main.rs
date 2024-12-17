@@ -4,6 +4,7 @@ mod speak_ssml_async;
 mod speak_ssml_async_bm_viseme;
 mod speak_text_async;
 mod speak_text_async_2;
+mod text_streaming;
 
 #[tokio::main]
 async fn main() {
