@@ -85,6 +85,8 @@ impl SpeechSynthesizer {
         }
     }
 
+    /// Creates a speech synthesizer from a speech config and an optional audio config.
+    /// Set audio config to None if you don't want the SDK to play the audio on the current active output device.
     pub fn from_config(
         speech_config: SpeechConfig,
         audio_config: Option<AudioConfig>,
