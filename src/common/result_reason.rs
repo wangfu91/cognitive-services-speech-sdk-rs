@@ -47,6 +47,18 @@ pub enum ResultReason {
     VoicesListRetrieved = 23,
 }
 
+impl From<i32> for ResultReason {
+    fn from(reason: i32) -> Self {
+        ResultReason::from_i32(reason)
+    }
+}
+
+impl From<u32> for ResultReason {
+    fn from(reason: u32) -> Self {
+        ResultReason::from_u32(reason)
+    }
+}
+
 impl ResultReason {
     pub fn from_u32(reason: u32) -> Self {
         match reason {

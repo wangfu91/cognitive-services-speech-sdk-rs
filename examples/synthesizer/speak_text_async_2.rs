@@ -14,7 +14,7 @@ pub async fn run_example() {
 
     helpers::set_callbacks(&mut speech_synthesizer);
 
-    let _ = tokio::spawn(async move {
+    tokio::spawn(async move {
         if let Err(err) = speech_synthesizer
             .speak_text_async("This is sample text to transcribe")
             .await
@@ -39,7 +39,7 @@ pub async fn run_example() {
             .collect::<Vec<_>>();
 
         info!("data read: {:?}", audio_data_chunk);
-        if audio_data_chunk.len() == 0 || audio_data_chunk_no0.len() == 0 {
+        if audio_data_chunk.is_empty() || audio_data_chunk_no0.is_empty() {
             info!("no more data to read!");
             break;
         }

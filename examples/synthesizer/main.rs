@@ -18,4 +18,5 @@ async fn main() {
     speak_ssml_async::run_example().await;
     speak_ssml_async_bm_viseme::run_example().await;
     audio_data_stream::run_example().await;
+    text_streaming::run_example().await;
 }

@@ -1,6 +1,7 @@
 use cognitive_services_speech_sdk_rs::audio::{
     AudioConfig, PullAudioOutputStream, PushAudioInputStream, PushAudioOutputStream,
 };
+use cognitive_services_speech_sdk_rs::common::PropertyId;
 use cognitive_services_speech_sdk_rs::speech::{
     AudioDataStream, SpeechConfig, SpeechRecognitionResult, SpeechRecognizer,
     SpeechSynthesisResult, SpeechSynthesizer,
@@ -38,7 +39,17 @@ pub fn set_callbacks(speech_synthesizer: &mut SpeechSynthesizer) {
         .unwrap();
 
     speech_synthesizer
-        .set_synthesizer_canceled_cb(|event| info!(">synthesizer_canceled_cb {:?}", event))
+        .set_synthesizer_canceled_cb(|event| {
+            info!(
+                ">synthesizer_canceled_cb {:#?}, details:{:#?}",
+                event,
+                event
+                    .result
+                    .properties
+                    .get_property(PropertyId::CancellationDetailsReasonDetailedText, "")
+                    .unwrap()
+            )
+        })
         .unwrap();
 }
 
@@ -109,7 +120,8 @@ pub fn speech_synthesizer() -> (SpeechSynthesizer, PullAudioOutputStream) {
         env::var("MSServiceRegion").unwrap(),
     )
     .unwrap();
-    let speech_synthesizer = SpeechSynthesizer::from_config(speech_config, audio_config).unwrap();
+    let speech_synthesizer =
+        SpeechSynthesizer::from_config(speech_config, Some(audio_config)).unwrap();
     (speech_synthesizer, pull_stream)
 }
 
@@ -122,7 +134,8 @@ pub fn speech_synthesizer_push() -> (SpeechSynthesizer, PushAudioOutputStream) {
         env::var("MSServiceRegion").unwrap(),
     )
     .unwrap();
-    let speech_synthesizer = SpeechSynthesizer::from_config(speech_config, audio_config).unwrap();
+    let speech_synthesizer =
+        SpeechSynthesizer::from_config(speech_config, Some(audio_config)).unwrap();
     (speech_synthesizer, push_stream)
 }
 

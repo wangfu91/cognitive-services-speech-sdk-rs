@@ -11,8 +11,8 @@ use crate::ffi::{
     synthesizer_start_speaking_ssml, synthesizer_start_speaking_text,
     synthesizer_started_set_callback, synthesizer_stop_speaking,
     synthesizer_synthesizing_set_callback, synthesizer_viseme_received_set_callback,
-    synthesizer_word_boundary_set_callback, SmartHandle, SPXEVENTHANDLE, SPXPROPERTYBAGHANDLE,
-    SPXRESULTHANDLE, SPXSYNTHHANDLE,
+    synthesizer_word_boundary_set_callback, SmartHandle, SPXEVENTHANDLE, SPXHANDLE,
+    SPXPROPERTYBAGHANDLE, SPXRESULTHANDLE, SPXSYNTHHANDLE,
 };
 use crate::speech::{
     AutoDetectSourceLanguageConfig, SpeechConfig, SpeechSynthesisBookmarkEvent,
@@ -85,17 +85,29 @@ impl SpeechSynthesizer {
         }
     }
 
-    pub fn from_config(speech_config: SpeechConfig, audio_config: AudioConfig) -> Result<Self> {
+    pub fn from_config(
+        speech_config: SpeechConfig,
+        audio_config: Option<AudioConfig>,
+    ) -> Result<Self> {
         unsafe {
             let mut handle: MaybeUninit<SPXSYNTHHANDLE> = MaybeUninit::uninit();
-            convert_err(
+
+            let ret = if let Some(audio_config) = audio_config {
                 synthesizer_create_speech_synthesizer_from_config(
                     handle.as_mut_ptr(),
                     speech_config.handle.inner(),
                     audio_config.handle.inner(),
-                ),
-                "SpeechSynthesizer.from_config error",
-            )?;
+                )
+            } else {
+                let spxhandle_null: SPXHANDLE = 0 as SPXHANDLE;
+                synthesizer_create_speech_synthesizer_from_config(
+                    handle.as_mut_ptr(),
+                    speech_config.handle.inner(),
+                    spxhandle_null,
+                )
+            };
+
+            convert_err(ret, "SpeechSynthesizer.from_config error")?;
             SpeechSynthesizer::from_handle(handle.assume_init())
         }
     }
@@ -160,7 +172,7 @@ impl SpeechSynthesizer {
     /// version 1.37.0
     pub async fn speak_async(
         &self,
-        request: SpeechSynthesisRequest,
+        request: &SpeechSynthesisRequest,
     ) -> Result<SpeechSynthesisResult> {
         unsafe {
             let mut result_handle: MaybeUninit<SPXRESULTHANDLE> = MaybeUninit::uninit();
@@ -218,7 +230,7 @@ impl SpeechSynthesizer {
     /// to change. Added in version 1.37.0
     pub async fn start_speaking_async(
         &self,
-        request: SpeechSynthesisRequest,
+        request: &SpeechSynthesisRequest,
     ) -> Result<SpeechSynthesisResult> {
         unsafe {
             let mut result_handle: MaybeUninit<SPXRESULTHANDLE> = MaybeUninit::uninit();

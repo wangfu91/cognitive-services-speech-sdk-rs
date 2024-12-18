@@ -31,6 +31,8 @@ pub struct SpeechSynthesisRequest {
     properties: PropertyCollection,
 }
 
+unsafe impl Sync for SpeechSynthesisRequest {}
+
 impl SpeechSynthesisRequest {
     pub fn new_text_streaming_request() -> Result<Self> {
         unsafe {
