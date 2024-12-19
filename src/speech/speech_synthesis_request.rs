@@ -81,11 +81,12 @@ impl SpeechSynthesisRequest {
 
     fn send_text_piece(&self, text: &str) -> Result<()> {
         let c_text = CString::new(text)?;
+        let text_len = c_text.as_bytes().len();
         unsafe {
             let ret = speech_synthesis_request_send_text_piece(
                 self.handle.inner(),
                 c_text.as_ptr(),
-                text.len() as u32,
+                text_len as u32,
             );
             convert_err(ret, "Failed to send text piece")
         }
