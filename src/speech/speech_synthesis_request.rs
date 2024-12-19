@@ -8,21 +8,30 @@ use crate::ffi::{
 use std::ffi::CString;
 use std::mem::MaybeUninit;
 
-pub struct InputStream<'a> {
+#[derive(Debug)]
+pub struct TextInputStream<'a> {
     parent: &'a SpeechSynthesisRequest,
 }
 
-impl<'a> InputStream<'a> {
+impl<'a> TextInputStream<'a> {
     fn new(parent: &'a SpeechSynthesisRequest) -> Self {
         Self { parent }
     }
 
     pub fn write(&self, text: &str) -> Result<()> {
+        log::info!("Sending text piece: {}", text);
         self.parent.send_text_piece(text)
     }
 
     pub fn close(&self) -> Result<()> {
+        log::info!("Closing text input stream");
         self.parent.finish_input()
+    }
+}
+
+impl Drop for TextInputStream<'_> {
+    fn drop(&mut self) {
+        let _ = self.close();
     }
 }
 
@@ -66,8 +75,8 @@ impl SpeechSynthesisRequest {
         }
     }
 
-    pub fn get_input_stream(&self) -> InputStream {
-        InputStream::new(self)
+    pub fn get_text_input_stream(&self) -> TextInputStream {
+        TextInputStream::new(self)
     }
 
     fn send_text_piece(&self, text: &str) -> Result<()> {

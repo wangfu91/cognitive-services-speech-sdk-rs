@@ -2,7 +2,7 @@ use std::env;
 
 use super::helpers;
 use cognitive_services_speech_sdk_rs::{
-    common::SpeechSynthesisOutputFormat,
+    common::{SpeechSynthesisOutputFormat, StreamStatus},
     speech::{AudioDataStream, SpeechConfig, SpeechSynthesisRequest, SpeechSynthesizer},
 };
 use log::*;
@@ -13,10 +13,10 @@ pub async fn run_example() {
     info!("running text_streaming example...");
     info!("---------------------------------------------------");
 
-    let region = env::var("MSServiceRegion").unwrap();
+    let region = env::var("AzureSpeechServiceRegion").unwrap();
     let tts_endpoint =
         format!("wss://{region}.tts.speech.microsoft.com/cognitiveservices/websocket/v2");
-    let subscription_key = env::var("MSSubscriptionKey").unwrap();
+    let subscription_key = env::var("AzureSpeechServiceSubscriptionKey").unwrap();
 
     let mut speech_config =
         SpeechConfig::from_endpoint_with_subscription(tts_endpoint, subscription_key.to_string())
@@ -36,7 +36,7 @@ pub async fn run_example() {
     helpers::set_callbacks(&mut speech_synthesizer);
 
     let request = SpeechSynthesisRequest::new_text_streaming_request().unwrap();
-    let input_stream = request.get_input_stream();
+    let input_stream = request.get_text_input_stream();
     match speech_synthesizer.start_speaking_async(&request).await {
         Err(err) => {
             error!("speak_text_async error {:?}", err);
@@ -59,15 +59,25 @@ pub async fn run_example() {
 
             input_stream.close().unwrap();
 
-            // wait for a while to read the audio data
-            tokio::time::sleep(std::time::Duration::from_secs(3)).await;
-
             let audio_stream = AudioDataStream::from_speech_synthesis_result(result).unwrap();
             let buffer = &mut [0u8; 32000];
 
-            while audio_stream.can_read_data(32000) {
-                let read_size = audio_stream.read(buffer).unwrap();
-                info!("read_size: {}", read_size);
+            loop {
+                let status = audio_stream.get_status().unwrap();
+                match status {
+                    StreamStatus::StreamStatusNoData => {
+                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                    }
+                    StreamStatus::StreamStatusCanceled => {
+                        info!("audio_stream status: Canceled");
+                    }
+                    _ => {
+                        info!("audio_stream status: {:?}", status);
+                        let read_size = audio_stream.read(buffer).unwrap();
+                        info!("read_size: {}", read_size);
+                        //info!("buffer: {:?}", buffer);
+                    }
+                }
             }
         }
     }
