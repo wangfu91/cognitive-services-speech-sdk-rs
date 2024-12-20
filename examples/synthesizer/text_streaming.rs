@@ -70,6 +70,11 @@ pub async fn run_example() {
                     }
                     StreamStatus::StreamStatusCanceled => {
                         info!("audio_stream status: Canceled");
+                        break;
+                    }
+                    StreamStatus::StreamStatusAllData => {
+                        info!("audio_stream status: AllData");
+                        break;
                     }
                     _ => {
                         info!("audio_stream status: {:?}", status);
