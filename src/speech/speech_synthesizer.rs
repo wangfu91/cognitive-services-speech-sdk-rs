@@ -26,7 +26,7 @@ use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::c_void;
 
-use super::SpeechSynthesisRequest;
+use super::{EmbeddedSpeechConfig, SpeechSynthesisRequest};
 
 /// SpeechSynthesizer struct holds functionality for text-to-speech synthesis.
 pub struct SpeechSynthesizer {
@@ -112,6 +112,13 @@ impl SpeechSynthesizer {
             convert_err(ret, "SpeechSynthesizer.from_config error")?;
             SpeechSynthesizer::from_handle(handle.assume_init())
         }
+    }
+
+    pub fn from_embedded_config(
+        speech_config: EmbeddedSpeechConfig,
+        audio_config: Option<AudioConfig>,
+    ) -> Result<Self> {
+        SpeechSynthesizer::from_config(speech_config.into(), audio_config)
     }
 
     pub fn from_auto_detect_source_lang_config(

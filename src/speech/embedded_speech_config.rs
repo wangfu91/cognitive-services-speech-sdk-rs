@@ -1,4 +1,4 @@
-use crate::common::{OutputFormat, ProfanityOption, PropertyId};
+use crate::common::{OutputFormat, ProfanityOption, PropertyId, SpeechSynthesisOutputFormat};
 use crate::error::{convert_err, Result};
 use crate::ffi::{
     embedded_speech_config_add_path, embedded_speech_config_create,
@@ -155,9 +155,11 @@ impl EmbeddedSpeechConfig {
     }
 
     /// Sets the speech synthesis output format (e.g. Riff16Khz16BitMonoPcm).
-    pub fn set_speech_synthesis_output_format<F: Into<String>>(&mut self, format: F) -> Result<()> {
-        self.config
-            .set_get_speech_synthesis_output_format(format.into())
+    pub fn set_speech_synthesis_output_format(
+        &mut self,
+        format: SpeechSynthesisOutputFormat,
+    ) -> Result<()> {
+        self.config.set_speech_synthesis_output_format(format)
     }
 
     /// Gets the speech synthesis output format.
