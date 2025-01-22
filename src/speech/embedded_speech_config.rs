@@ -3,7 +3,8 @@ use crate::error::{convert_err, Result};
 use crate::ffi::{
     embedded_speech_config_add_path, embedded_speech_config_create,
     embedded_speech_config_get_num_speech_reco_models,
-    embedded_speech_config_get_speech_reco_model, property_bag_free_string,
+    embedded_speech_config_get_speech_reco_model,
+    embedded_speech_config_set_speech_recognition_model, property_bag_free_string,
     speech_recognition_model_get_locales, speech_recognition_model_get_name,
     speech_recognition_model_get_path, speech_recognition_model_get_version,
     speech_recognition_model_handle_release, SmartHandle, SPXSPEECHCONFIGHANDLE,
@@ -92,21 +93,27 @@ impl EmbeddedSpeechConfig {
     }
 
     /// Sets the model for speech recognition.
-    /// * `model`:  The recognition model
+    /// * `model_name`:  The recognition model name.
     /// * `model_key`: The model decryption key.
     pub fn set_speech_recognition_model<S: Into<String>>(
         &mut self,
-        model: &SpeechRecognitionModel,
+        model_name: S,
         model_key: S,
     ) -> Result<()> {
-        self.config.set_property(
-            PropertyId::SpeechServiceConnectionRecoModelName,
-            model.name.clone(),
-        )?;
-        self.config.set_property(
-            PropertyId::SpeechServiceConnectionRecoModelKey,
-            model_key.into(),
-        )
+        unsafe {
+            let c_model_name_str = CString::new(model_name.into())?;
+            let c_model_key_str = CString::new(model_key.into())?;
+            let ret = embedded_speech_config_set_speech_recognition_model(
+                self.config.handle.inner(),
+                c_model_name_str.as_ptr(),
+                c_model_key_str.as_ptr(),
+            );
+            convert_err(
+                ret,
+                "EmbeddedSpeechConfig::set_speech_recognition_model error",
+            )?;
+            Ok(())
+        }
     }
 
     /// Gets the model name for speech recognition.
@@ -165,6 +172,10 @@ impl EmbeddedSpeechConfig {
     /// Gets the speech synthesis output format.
     pub fn get_speech_synthesis_output_format(&self) -> Result<String> {
         self.config.get_speech_synthesis_output_format()
+    }
+
+    pub fn set_property(&mut self, id: PropertyId, value: String) -> Result<()> {
+        self.config.set_property(id, value)
     }
 }
 
