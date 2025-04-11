@@ -20,6 +20,7 @@ pub async fn run_example() {
         OutputStream::try_default().expect("Failed to create audio output stream");
     let sink = Arc::new(Sink::try_new(&stream_handle).expect("Failed to create audio sink"));
 
+    // Use input text streaming to lower speech synthesis latency.
     // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-lower-speech-synthesis-latency?pivots=programming-language-cpp#input-text-streaming
     let region = env::var("MSServiceRegion").unwrap();
     // To use the text stream API, you have to use the websocket V2 endpoint.
