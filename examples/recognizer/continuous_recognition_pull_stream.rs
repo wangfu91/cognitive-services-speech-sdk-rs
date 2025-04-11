@@ -63,7 +63,6 @@ impl PullAudioInputStreamCallbacks for BinaryAudioStreamReader {
     fn close(&mut self) {
         // nothing to do
         debug!("BinaryAudioStreamReader.close called");
-        return;
     }
 
     #[allow(unused_variables)]

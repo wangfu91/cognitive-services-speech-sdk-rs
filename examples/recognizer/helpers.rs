@@ -58,8 +58,8 @@ pub fn speech_recognizer_from_audio_cfg(audio_config: AudioConfig) -> SpeechReco
         env::var("MSServiceRegion").unwrap(),
     )
     .unwrap();
-    let speech_recognizer = SpeechRecognizer::from_config(speech_config, audio_config).unwrap();
-    speech_recognizer
+
+    SpeechRecognizer::from_config(speech_config, audio_config).unwrap()
 }
 
 /// creates speech recognizer from push input stream and MS speech subscription key

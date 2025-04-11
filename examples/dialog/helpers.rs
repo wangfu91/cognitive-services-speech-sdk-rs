@@ -90,7 +90,6 @@ pub fn dialog_service_connector_from_audio_cfg(
         env::var("MSServiceRegion").unwrap(),
     )
     .unwrap();
-    let dialog_service_connector =
-        DialogServiceConnector::from_config(bot_fw_config, Some(audio_config)).unwrap();
-    dialog_service_connector
+
+    DialogServiceConnector::from_config(bot_fw_config, Some(audio_config)).unwrap()
 }

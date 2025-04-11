@@ -4,7 +4,7 @@ mod speak_ssml_async;
 mod speak_ssml_async_bm_viseme;
 mod speak_text_async;
 mod speak_text_async_2;
-mod text_streaming;
+mod input_text_streaming;
 
 #[tokio::main]
 async fn main() {
@@ -20,5 +20,5 @@ async fn main() {
     speak_ssml_async_bm_viseme::run_example().await;
     audio_data_stream::run_example().await;
 
-    text_streaming::run_example().await;
+    input_text_streaming::run_example().await;
 }

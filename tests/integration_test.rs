@@ -86,7 +86,8 @@ async fn text_to_speech() {
     )
     .unwrap();
     let mut speech_synthesizer =
-        msspeech::speech::SpeechSynthesizer::from_config(speech_config, audio_config).unwrap();
+        msspeech::speech::SpeechSynthesizer::from_config(speech_config, Some(audio_config))
+            .unwrap();
 
     speech_synthesizer
         .set_synthesizer_started_cb(|event| info!("synthesizer_started_cb {:?}", event))
