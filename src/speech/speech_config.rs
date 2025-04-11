@@ -238,16 +238,11 @@ impl SpeechConfig {
             let c_name = CString::new(name)?;
             let c_value = CString::new(value)?;
 
-            #[cfg(target_os = "windows")]
-            let channel = channel as i32;
-            #[cfg(not(target_os = "windows"))]
-            let channel = channel as u32;
-
             let ret = speech_config_set_service_property(
                 self.handle.inner(),
                 c_name.as_ptr(),
                 c_value.as_ptr(),
-                channel,
+                channel.into(),
             );
             convert_err(ret, "SpeechConfig.set_service_property error")?;
             Ok(())

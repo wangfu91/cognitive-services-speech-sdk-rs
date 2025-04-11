@@ -3,10 +3,11 @@ use std::ffi::CStr;
 use crate::common::SpeechSynthesisBoundaryType;
 use crate::error::{convert_err, Result};
 use crate::ffi::{
-    synthesizer_event_get_text, synthesizer_event_handle_release,
+    property_bag_free_string, synthesizer_event_get_text, synthesizer_event_handle_release,
     synthesizer_word_boundary_event_get_values, SmartHandle, SpeechSynthesis_BoundaryType,
     SPXEVENTHANDLE,
 };
+use std::ffi::CStr;
 
 /// Event passed into speech synthetizer's callback set_synthesizer_word_boundary_cb.
 #[derive(Debug)]
@@ -40,13 +41,13 @@ impl SpeechSynthesisWordBoundaryEvent {
             );
             convert_err(ret, "SpeechSynthesisWordBoundaryEvent::from_handle error")?;
 
-            #[cfg(target_os = "windows")]
-            let boundary_type = SpeechSynthesisBoundaryType::from_i32(boundary_type);
-            #[cfg(not(target_os = "windows"))]
-            let boundary_type = SpeechSynthesisBoundaryType::from_u32(boundary_type);
-
             let c_text = synthesizer_event_get_text(handle);
             let text = CStr::from_ptr(c_text).to_str()?.to_owned();
+            let ret = property_bag_free_string(c_text);
+            convert_err(
+                ret,
+                "SpeechSynthesisWordBoundaryEvent::from_handle(property_bag_free_string) error",
+            )?;
 
             Ok(SpeechSynthesisWordBoundaryEvent {
                 handle: SmartHandle::create(
@@ -58,7 +59,7 @@ impl SpeechSynthesisWordBoundaryEvent {
                 duration_ms,
                 text_offset,
                 word_length,
-                boundary_type,
+                boundary_type: boundary_type.into(),
                 text,
             })
         }

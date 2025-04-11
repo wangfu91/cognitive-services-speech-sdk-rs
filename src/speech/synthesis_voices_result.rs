@@ -59,7 +59,6 @@ impl SynthesisVoicesResult {
                 ret,
                 "SynthesisVoicesResult::from_handle(synthesis_voices_result_get_voice_num) error",
             )?;
-            voice_num -= 1;
             let mut voices = vec![];
             for idx in 0..voice_num {
                 let mut voice_info_handle: MaybeUninit<SPXRESULTHANDLE> = MaybeUninit::uninit();
@@ -76,11 +75,6 @@ impl SynthesisVoicesResult {
                 voices.push(voice_info);
             }
 
-            #[cfg(target_os = "windows")]
-            let reason = ResultReason::from_i32(reason);
-            #[cfg(not(target_os = "windows"))]
-            let reason = ResultReason::from_u32(reason);
-
             Ok(SynthesisVoicesResult {
                 handle: SmartHandle::create(
                     "SynthesisVoicesResult",
@@ -89,7 +83,7 @@ impl SynthesisVoicesResult {
                 ),
                 voices,
                 result_id,
-                reason,
+                reason: reason.into(),
                 error_details,
                 properties,
             })
