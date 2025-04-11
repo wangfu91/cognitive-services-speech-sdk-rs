@@ -21,7 +21,7 @@ pub async fn run_example() {
     info!("Using first model: {:?}", model);
 
     speech_config
-        .set_speech_recognition_model(model, env::var("ModelKey").unwrap())
+        .set_speech_recognition_model(model.path.to_string(), env::var("ModelKey").unwrap())
         .unwrap();
 
     let mut speech_recognizer =

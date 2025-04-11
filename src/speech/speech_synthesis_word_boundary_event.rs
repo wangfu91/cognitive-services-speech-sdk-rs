@@ -1,5 +1,3 @@
-use std::ffi::CStr;
-
 use crate::common::SpeechSynthesisBoundaryType;
 use crate::error::{convert_err, Result};
 use crate::ffi::{
