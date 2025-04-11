@@ -18,9 +18,9 @@ impl<'a> TextInputStream<'a> {
         Self { parent }
     }
 
-    pub fn write(&self, text: &str) -> Result<()> {
-        log::info!("Sending text piece: {}", text);
-        self.parent.send_text_piece(text)
+    pub fn write<S: AsRef<str>>(&self, text: S) -> Result<()> {
+        let text_ref = text.as_ref();
+        self.parent.send_text_piece(text_ref)
     }
 
     pub fn close(&self) -> Result<()> {
@@ -29,16 +29,12 @@ impl<'a> TextInputStream<'a> {
     }
 }
 
-impl Drop for TextInputStream<'_> {
-    fn drop(&mut self) {
-        let _ = self.close();
-    }
-}
-
 pub struct SpeechSynthesisRequest {
     pub(crate) handle: SmartHandle<SPXREQUESTHANDLE>,
     properties: PropertyCollection,
 }
+
+unsafe impl Sync for SpeechSynthesisRequest {}
 
 impl SpeechSynthesisRequest {
     pub fn new_text_streaming_request() -> Result<Self> {

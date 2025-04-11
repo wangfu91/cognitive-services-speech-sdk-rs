@@ -35,7 +35,7 @@ impl fmt::Debug for SpeechSynthesisResult {
                 "audio_data",
                 &format!("(Truncated): {:?}", &audio_data_truncated),
             )
-            // .field("audio_data", &self.audio_data)
+            .field("audio_duration_ms", &self.audio_duration_ms)
             .finish()
     }
 }
