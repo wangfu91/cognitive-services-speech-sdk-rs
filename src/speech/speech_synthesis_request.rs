@@ -40,8 +40,6 @@ pub struct SpeechSynthesisRequest {
     properties: PropertyCollection,
 }
 
-unsafe impl Sync for SpeechSynthesisRequest {}
-
 impl SpeechSynthesisRequest {
     pub fn new_text_streaming_request() -> Result<Self> {
         unsafe {
@@ -60,7 +58,7 @@ impl SpeechSynthesisRequest {
                 request_handle.assume_init(),
                 prop_bag_handle.as_mut_ptr(),
             );
-            convert_err(ret, "Failed to get property bag")?;
+            convert_err(ret, "Failed to get speech synthesis request property bag")?;
 
             let request = Self {
                 handle: SmartHandle::create(
