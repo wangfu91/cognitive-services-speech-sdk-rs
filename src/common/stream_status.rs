@@ -7,7 +7,7 @@ pub enum StreamStatus {
     /// StreamStatusNoData indicates that the audio data stream contains no data.
     StreamStatusNoData = 1,
 
-    /// StreamStatusNoData indicates that the audio data stream contains no data.
+    /// StreamStatusPartialData indicates that the audio data stream contains partial data of a speak request.
     StreamStatusPartialData = 2,
 
     /// StreamStatusAllData indicates the audio data stream contains all data of a speak request.
@@ -27,8 +27,16 @@ impl StreamStatus {
             _ => StreamStatus::StreamStatusCanceled,
         }
     }
+}
 
-    pub fn from_i32(status: i32) -> Self {
-        StreamStatus::from_u32(status as u32)
+impl From<u32> for StreamStatus {
+    fn from(value: u32) -> Self {
+        StreamStatus::from_u32(value)
+    }
+}
+
+impl From<i32> for StreamStatus {
+    fn from(value: i32) -> Self {
+        StreamStatus::from_u32(value as u32)
     }
 }

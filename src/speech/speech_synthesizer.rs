@@ -16,8 +16,8 @@ use crate::ffi::{
 };
 use crate::speech::{
     AutoDetectSourceLanguageConfig, SpeechConfig, SpeechSynthesisBookmarkEvent,
-    SpeechSynthesisEvent, SpeechSynthesisResult, SpeechSynthesisVisemeEvent,
-    SpeechSynthesisWordBoundaryEvent, SynthesisVoicesResult,
+    SpeechSynthesisEvent, SpeechSynthesisRequest, SpeechSynthesisResult,
+    SpeechSynthesisVisemeEvent, SpeechSynthesisWordBoundaryEvent, SynthesisVoicesResult,
 };
 use log::*;
 use std::boxed::Box;
@@ -26,7 +26,7 @@ use std::fmt;
 use std::mem::MaybeUninit;
 use std::os::raw::c_void;
 
-use super::{EmbeddedSpeechConfig, SpeechSynthesisRequest};
+use super::EmbeddedSpeechConfig;
 
 /// SpeechSynthesizer struct holds functionality for text-to-speech synthesis.
 pub struct SpeechSynthesizer {
@@ -110,6 +110,24 @@ impl SpeechSynthesizer {
             };
 
             convert_err(ret, "SpeechSynthesizer.from_config error")?;
+            SpeechSynthesizer::from_handle(handle.assume_init())
+        }
+    }
+
+    pub fn from_optional_audio_config(
+        speech_config: SpeechConfig,
+        audio_config: Option<AudioConfig>,
+    ) -> Result<Self> {
+        unsafe {
+            let mut handle: MaybeUninit<SPXSYNTHHANDLE> = MaybeUninit::uninit();
+            convert_err(
+                synthesizer_create_speech_synthesizer_from_config(
+                    handle.as_mut_ptr(),
+                    speech_config.handle.inner(),
+                    audio_config.map_or(std::ptr::null_mut(), |a| a.handle.inner()),
+                ),
+                "SpeechSynthesizer.from_optional_audio_config error",
+            )?;
             SpeechSynthesizer::from_handle(handle.assume_init())
         }
     }

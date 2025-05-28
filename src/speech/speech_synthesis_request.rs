@@ -8,41 +8,17 @@ use crate::ffi::{
 use std::ffi::CString;
 use std::mem::MaybeUninit;
 
+/// Represents an input stream for speech synthesis request.
 #[derive(Debug)]
-pub struct TextInputStream<'a> {
-    parent: &'a SpeechSynthesisRequest,
-}
-
-impl<'a> TextInputStream<'a> {
-    fn new(parent: &'a SpeechSynthesisRequest) -> Self {
-        Self { parent }
-    }
-
-    pub fn write(&self, text: &str) -> Result<()> {
-        log::info!("Sending text piece: {}", text);
-        self.parent.send_text_piece(text)
-    }
-
-    pub fn close(&self) -> Result<()> {
-        log::info!("Closing text input stream");
-        self.parent.finish_input()
-    }
-}
-
-impl Drop for TextInputStream<'_> {
-    fn drop(&mut self) {
-        let _ = self.close();
-    }
-}
-
 pub struct SpeechSynthesisRequest {
-    pub(crate) handle: SmartHandle<SPXREQUESTHANDLE>,
-    properties: PropertyCollection,
+    pub handle: SmartHandle<SPXREQUESTHANDLE>,
+    pub properties: PropertyCollection,
 }
 
 unsafe impl Sync for SpeechSynthesisRequest {}
 
 impl SpeechSynthesisRequest {
+    /// Creates a speech synthesis request, with text streaming is enabled.
     pub fn new_text_streaming_request() -> Result<Self> {
         unsafe {
             let mut request_handle: MaybeUninit<SPXREQUESTHANDLE> = MaybeUninit::uninit();
@@ -60,7 +36,7 @@ impl SpeechSynthesisRequest {
                 request_handle.assume_init(),
                 prop_bag_handle.as_mut_ptr(),
             );
-            convert_err(ret, "Failed to get property bag")?;
+            convert_err(ret, "Failed to get speech synthesis request property bag")?;
 
             let request = Self {
                 handle: SmartHandle::create(
@@ -75,12 +51,9 @@ impl SpeechSynthesisRequest {
         }
     }
 
-    pub fn get_text_input_stream(&self) -> TextInputStream {
-        TextInputStream::new(self)
-    }
-
-    fn send_text_piece(&self, text: &str) -> Result<()> {
-        let c_text = CString::new(text)?;
+    /// Send a piece of text to the speech synthesis service to be synthesized, used in text streaming mode.
+    pub fn send_text_piece<S: AsRef<str>>(&self, text: S) -> Result<()> {
+        let c_text = CString::new(text.as_ref())?;
         let text_len = c_text.as_bytes().len();
         unsafe {
             let ret = speech_synthesis_request_send_text_piece(
@@ -92,19 +65,11 @@ impl SpeechSynthesisRequest {
         }
     }
 
-    fn finish_input(&self) -> Result<()> {
+    /// Finish the text input, used in text streaming mode.
+    pub fn finish_input(&self) -> Result<()> {
         unsafe {
             let ret = speech_synthesis_request_finish(self.handle.inner());
             convert_err(ret, "Failed to finish input")
         }
-    }
-}
-
-impl std::fmt::Debug for SpeechSynthesisRequest {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("SpeechSynthesisRequest")
-            .field("handle", &self.handle)
-            .field("properties", &self.properties)
-            .finish()
     }
 }

@@ -60,7 +60,8 @@ impl From<u32> for ResultReason {
 }
 
 impl ResultReason {
-    pub fn from_u32(reason: u32) -> Self {
+    /// Converts an i32 to a ResultReason.
+    pub fn from_i32(reason: i32) -> Self {
         match reason {
             0 => ResultReason::NoMatch,
             1 => ResultReason::Canceled,
@@ -75,11 +76,13 @@ impl ResultReason {
             10 => ResultReason::RecognizingKeyword,
             11 => ResultReason::RecognizedKeyword,
             12 => ResultReason::SynthesizingAudioStarted,
-            _ => ResultReason::VoicesListRetrieved,
+            23 => ResultReason::VoicesListRetrieved,
+            _ => panic!("Unknown result reason: {}", reason),
         }
     }
 
-    pub fn from_i32(reason: i32) -> Self {
-        ResultReason::from_u32(reason as u32)
+    /// Converts a u32 to a ResultReason.
+    pub fn from_u32(reason: u32) -> Self {
+        Self::from_i32(reason as i32)
     }
 }

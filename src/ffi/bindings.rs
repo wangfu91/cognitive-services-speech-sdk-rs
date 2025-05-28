@@ -11,6 +11,7 @@ pub const _STL_LANG: u32 = 0;
 pub const _HAS_CXX17: u32 = 0;
 pub const _HAS_CXX20: u32 = 0;
 pub const _HAS_CXX23: u32 = 0;
+pub const _HAS_CXX26: u32 = 0;
 pub const _HAS_NODISCARD: u32 = 0;
 pub const _ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE: u32 = 1;
 pub const _CRT_BUILD_DESKTOP_APP: u32 = 1;

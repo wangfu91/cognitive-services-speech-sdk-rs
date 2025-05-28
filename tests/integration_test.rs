@@ -58,7 +58,7 @@ async fn speech_to_text() {
         .unwrap();
 
     let result = speech_recognizer.recognize_once_async().await.unwrap();
-    info!("got recognition {:?}", result);
+    println!("got recognition {:?}", result);
     assert!(
         result
             .text
@@ -72,8 +72,6 @@ async fn speech_to_text() {
 }
 
 #[tokio::test]
-// ignored so that these tests are not run by CI during build without subscription key
-#[ignore]
 async fn text_to_speech() {
     let pull_stream = msspeech::audio::PullAudioOutputStream::create_pull_stream().unwrap();
     let audio_config = msspeech::audio::AudioConfig::from_stream_output(&pull_stream).unwrap();

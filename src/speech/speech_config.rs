@@ -238,16 +238,11 @@ impl SpeechConfig {
             let c_name = CString::new(name)?;
             let c_value = CString::new(value)?;
 
-            #[cfg(target_os = "windows")]
-            let channel = channel as i32;
-            #[cfg(not(target_os = "windows"))]
-            let channel = channel as u32;
-
             let ret = speech_config_set_service_property(
                 self.handle.inner(),
                 c_name.as_ptr(),
                 c_value.as_ptr(),
-                channel,
+                channel.into(),
             );
             convert_err(ret, "SpeechConfig.set_service_property error")?;
             Ok(())
@@ -260,6 +255,16 @@ impl SpeechConfig {
             convert_err(ret, "SpeechConfig.set_profanity_option error")?;
             Ok(())
         }
+    }
+
+    pub fn set_speech_synthesis_output_format(
+        &mut self,
+        format: SpeechSynthesisOutputFormat,
+    ) -> Result<()> {
+        let ret =
+            unsafe { speech_config_set_audio_output_format(self.handle.inner(), format.into()) };
+        convert_err(ret, "SpeechConfig.set_speech_synthesis_output_format error")?;
+        Ok(())
     }
 
     pub fn enable_audio_logging(&mut self) -> Result<()> {
@@ -410,15 +415,5 @@ impl SpeechConfig {
             PropertyId::SpeechServiceConnectionSynthOutputFormat,
             speech_synthesis_output_format,
         )
-    }
-
-    pub fn set_speech_synthesis_output_format(
-        &mut self,
-        format: SpeechSynthesisOutputFormat,
-    ) -> Result<()> {
-        let ret =
-            unsafe { speech_config_set_audio_output_format(self.handle.inner(), format.into()) };
-        convert_err(ret, "SpeechConfig.set_speech_synthesis_output_format error")?;
-        Ok(())
     }
 }

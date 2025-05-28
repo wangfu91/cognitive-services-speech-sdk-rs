@@ -51,6 +51,12 @@ pub fn set_callbacks(speech_synthesizer: &mut SpeechSynthesizer) {
             )
         })
         .unwrap();
+
+    speech_synthesizer
+        .set_synthesizer_word_boundary_cb(|event| {
+            info!(">set_synthesizer_word_boundary_cb {:?}", event)
+        })
+        .unwrap();
 }
 
 pub fn set_callbacks_all(speech_synthesizer: &mut SpeechSynthesizer) {
