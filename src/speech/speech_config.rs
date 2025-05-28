@@ -257,6 +257,16 @@ impl SpeechConfig {
         }
     }
 
+    pub fn set_speech_synthesis_output_format(
+        &mut self,
+        format: SpeechSynthesisOutputFormat,
+    ) -> Result<()> {
+        let ret =
+            unsafe { speech_config_set_audio_output_format(self.handle.inner(), format.into()) };
+        convert_err(ret, "SpeechConfig.set_speech_synthesis_output_format error")?;
+        Ok(())
+    }
+
     pub fn enable_audio_logging(&mut self) -> Result<()> {
         self.set_property(
             PropertyId::SpeechServiceConnectionEnableAudioLogging,
@@ -405,15 +415,5 @@ impl SpeechConfig {
             PropertyId::SpeechServiceConnectionSynthOutputFormat,
             speech_synthesis_output_format,
         )
-    }
-
-    pub fn set_speech_synthesis_output_format(
-        &mut self,
-        format: SpeechSynthesisOutputFormat,
-    ) -> Result<()> {
-        let ret =
-            unsafe { speech_config_set_audio_output_format(self.handle.inner(), format.into()) };
-        convert_err(ret, "SpeechConfig.set_speech_synthesis_output_format error")?;
-        Ok(())
     }
 }

@@ -1,11 +1,10 @@
 use std::env;
-use std::sync::Arc;
 
 use cognitive_services_speech_sdk_rs::{
     common::{SpeechSynthesisOutputFormat, StreamStatus},
     speech::{AudioDataStream, SpeechConfig, SpeechSynthesisRequest, SpeechSynthesizer},
 };
-use log::*;
+use log::{error, info};
 use rodio::buffer::SamplesBuffer;
 use rodio::{OutputStream, Sink};
 
@@ -18,7 +17,7 @@ pub async fn run_example() {
     // Initialize audio output system
     let (_stream, stream_handle) =
         OutputStream::try_default().expect("Failed to create audio output stream");
-    let sink = Arc::new(Sink::try_new(&stream_handle).expect("Failed to create audio sink"));
+    let sink = Sink::try_new(&stream_handle).expect("Failed to create audio sink");
 
     // Use input text streaming to lower speech synthesis latency.
     // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-lower-speech-synthesis-latency?pivots=programming-language-cpp#input-text-streaming
@@ -42,7 +41,9 @@ pub async fn run_example() {
         .set_speech_synthesis_output_format(SpeechSynthesisOutputFormat::Raw24Khz16BitMonoPcm)
         .unwrap();
 
-    let speech_synthesizer = SpeechSynthesizer::from_config(speech_config, None).unwrap();
+    // Set the audio_config parameter to None to control the audio play ourselves.
+    let speech_synthesizer =
+        SpeechSynthesizer::from_optional_audio_config(speech_config, None).unwrap();
 
     let request = SpeechSynthesisRequest::new_text_streaming_request().unwrap();
 
@@ -55,13 +56,12 @@ pub async fn run_example() {
             let buffer = &mut [0u8; 32000]; // Buffer to receive audio data
 
             std::thread::spawn(move || {
-                let input_stream = request.get_text_input_stream();
                 for response in AiResponse::new() {
-                    info!("++++++ Writing input: {}", response);
-                    input_stream.write(response).unwrap();
+                    info!("++++++ Writing input text stream: {}", response);
+                    request.send_text_piece(response).unwrap();
                 }
-                input_stream.close().unwrap();
-                info!("====== Input stream closed");
+                request.finish_input().unwrap();
+                info!("====== Input text stream closed");
             });
 
             loop {
@@ -128,6 +128,7 @@ struct AiResponse {
 impl AiResponse {
     pub fn new() -> Self {
         let responses = [
+            "Input text streaming.",
             "Text streaming allows real-time text processing for rapid audio generation. ",
             "It's perfect for dynamic text vocalization, ",
             "such as reading outputs from AI models like GPT in real-time. ",

@@ -1,3 +1,5 @@
+use std::ffi::CStr;
+
 use crate::common::SpeechSynthesisBoundaryType;
 use crate::error::{convert_err, Result};
 use crate::ffi::{
@@ -5,7 +7,6 @@ use crate::ffi::{
     synthesizer_word_boundary_event_get_values, SmartHandle, SpeechSynthesis_BoundaryType,
     SPXEVENTHANDLE,
 };
-use std::ffi::CStr;
 
 /// Event passed into speech synthetizer's callback set_synthesizer_word_boundary_cb.
 #[derive(Debug)]
